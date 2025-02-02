@@ -1,4 +1,3 @@
-// src/filters/database-exception.filter.ts
 import {
   ExceptionFilter,
   Catch,

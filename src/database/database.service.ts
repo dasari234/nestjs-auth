@@ -11,7 +11,7 @@ export class DatabaseService implements TypeOrmOptionsFactory {
       type: 'postgres',
       url: this.configService.get<string>('DATABASE_URL'),
       entities: [__dirname + '/../**/*.schema{.ts,.js}'],
-      synchronize: true, // Set to false in production
+      synchronize: this.configService.get<boolean>('SYNCHRONIZE'), // Set to false in production
       logging: true,
     };
   }

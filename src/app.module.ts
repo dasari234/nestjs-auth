@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { DatabaseModule } from './database/database.module';
-import { UserModule } from './user/user.module';
+import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 // import { RedisCacheModule } from './redis-cache/redis-cache.module';
 
@@ -11,7 +11,7 @@ import { AuthModule } from './auth/auth.module';
       isGlobal: true,
     }),
     DatabaseModule,
-    UserModule,
+    UsersModule,
     AuthModule,
     // RedisCacheModule,
   ],

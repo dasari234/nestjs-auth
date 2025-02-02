@@ -1,4 +1,3 @@
-// src/filters/http-exception.filter.ts
 import * as winston from 'winston';
 import {
   ExceptionFilter,

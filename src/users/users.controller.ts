@@ -9,7 +9,7 @@ import {
   NotFoundException,
   UseGuards,
 } from '@nestjs/common';
-import { UserService } from './user.service';
+import { UsersService } from './users.service';
 import { User } from './schema/user.schema';
 
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -20,26 +20,26 @@ import { buildResponse } from '../utils/api-response.util';
 
 @Controller('users')
 @UseGuards(JwtAuthGuard)
-export class UserController {
-  constructor(private readonly userService: UserService) {}
+export class UsersController {
+  constructor(private readonly UsersService: UsersService) {}
 
   @Post()
   async create(@Body() user: Partial<User>): Promise<ApiResponse<User | null>> {
-    // return this.userService.create(user);
-    const response = await this.userService.create(user);
+    // return this.UsersService.create(user);
+    const response = await this.UsersService.create(user);
     return buildResponse(true, 'OK', response);
   }
 
   @Get()
   // @Roles('admin')
   async findAll(): Promise<ApiResponse<User[]>> {
-    const response = await this.userService.findAll();
+    const response = await this.UsersService.findAll();
     return buildResponse(true, 'OK', response);
   }
 
   @Get(':id')
   async findOne(@Param('id') id: number): Promise<ApiResponse<User | null>> {
-    const response = await this.userService.findOne(id);
+    const response = await this.UsersService.findOne(id);
     if (!response) {
       throw new NotFoundException(`User with ID ${id} not found`);
     }
@@ -51,9 +51,9 @@ export class UserController {
     @Param('id') id: number,
     @Body() user: Partial<User>,
   ): Promise<ApiResponse<any>> {
-    const findOne = await this.userService.findOne(id);
+    const findOne = await this.UsersService.findOne(id);
     if (findOne) {
-      const response = await this.userService.update(id, user);
+      const response = await this.UsersService.update(id, user);
       return buildResponse(true, 'Updated successfully', response);
     } else {
       return buildResponse(false, 'Record not found', '');
@@ -62,12 +62,30 @@ export class UserController {
 
   @Delete(':id')
   async remove(@Param('id') id: number): Promise<ApiResponse<any>> {
-    const findOne = await this.userService.findOne(id);
+    const findOne = await this.UsersService.findOne(id);
     if (findOne) {
-      const response = await this.userService.remove(id);
+      const response = await this.UsersService.remove(id);
       return buildResponse(true, 'Deleted successfully', response);
     } else {
       return buildResponse(false, 'Record not found', '');
     }
   }
 }
+// @Delete(':id')
+// async remove(@Param('id') id: number) {
+//   try {
+//     await this.UsersService.remove(id);
+//     return { message: `User with ID ${id} deleted successfully` };
+//   } catch (error) {
+//     if (error instanceof NotFoundException) {
+//       throw new HttpException(
+//         {
+//           statusCode: HttpStatus.NOT_FOUND,
+//           message: error.message,
+//         },
+//         HttpStatus.NOT_FOUND,
+//       );
+//     }
+//     throw error;
+//   }
+// }
