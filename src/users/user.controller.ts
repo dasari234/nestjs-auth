@@ -11,7 +11,7 @@ import {
   BadRequestException,
   UseGuards,
 } from '@nestjs/common';
-import { UsersService } from './users.service';
+import { UserService } from './user.service';
 import { User } from './schema/user.schema';
 
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -25,7 +25,7 @@ import { UpdateUserDto } from './dto/update-user-dto';
 @Controller('users')
 @UseGuards(JwtAuthGuard)
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(private readonly userService: UserService) {}
 
   @Post()
   async create(
@@ -35,24 +35,24 @@ export class UsersController {
     if (!email) {
       throw new BadRequestException('Email is required');
     }
-    const existingUser = await this.usersService.findOneByEmail(email);
+    const existingUser = await this.userService.findOneByEmail(email);
     if (existingUser) {
       throw new ConflictException('Email already exists');
     }
-    const response = await this.usersService.create(createUserDto);
+    const response = await this.userService.create(createUserDto);
     return buildResponse(true, 'OK', response);
   }
 
   @Get()
   // @Roles('admin')
   async findAll(): Promise<ApiResponse<User[]>> {
-    const response = await this.usersService.findAll();
+    const response = await this.userService.findAll();
     return buildResponse(true, 'OK', response);
   }
 
   @Get(':id')
   async findOne(@Param('id') id: number): Promise<ApiResponse<User | null>> {
-    const response = await this.usersService.findOne(id);
+    const response = await this.userService.findOne(id);
     if (!response) {
       throw new NotFoundException(`User with ID ${id} not found`);
     }
@@ -64,9 +64,9 @@ export class UsersController {
     @Param('id') id: number,
     @Body() updateUserDto: UpdateUserDto,
   ): Promise<ApiResponse<any>> {
-    const existingUser = await this.usersService.findOne(id);
+    const existingUser = await this.userService.findOne(id);
     if (existingUser) {
-      const response = await this.usersService.update(id, updateUserDto);
+      const response = await this.userService.update(id, updateUserDto);
       return buildResponse(true, 'Updated successfully', response);
     } else {
       return buildResponse(false, 'Record not found', '');
@@ -75,9 +75,9 @@ export class UsersController {
 
   @Delete(':id')
   async remove(@Param('id') id: number): Promise<ApiResponse<any>> {
-    const existingUser = await this.usersService.findOne(id);
+    const existingUser = await this.userService.findOne(id);
     if (existingUser) {
-      const response = await this.usersService.remove(id);
+      const response = await this.userService.remove(id);
       return buildResponse(true, 'Deleted successfully', response);
     } else {
       return buildResponse(false, 'Record not found', '');

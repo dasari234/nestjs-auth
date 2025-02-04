@@ -1,18 +1,18 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { UsersService } from '../users/users.service';
+import { UserService } from '../users/user.service';
 import { User } from '../users/schema/user.schema';
 import { LoginUserDto } from './dto/login-user-dto';
 
 @Injectable()
 export class AuthService {
   constructor(
-    private UsersService: UsersService,
+    private userService: UserService,
     private jwtService: JwtService,
   ) {}
 
   async validateUser(email: string, password: string): Promise<User | null> {
-    const user = await this.UsersService.findOneByEmail(email);
+    const user = await this.userService.findOneByEmail(email);
     if (!user) {
       throw new UnauthorizedException('Email not found');
     }
