@@ -7,15 +7,20 @@ export class WinstonLogger implements LoggerService {
 
   constructor() {
     this.logger = winston.createLogger({
-      level: 'info',
-      format: winston.format.json(),
+      level: process.env.LOG_LEVEL || 'info',
+      format: winston.format.combine(
+        winston.format.timestamp(),
+        winston.format.json(),
+      ),
       transports: [
         new winston.transports.Console(),
         new winston.transports.File({
-          filename: 'logs/error.log',
+          filename: process.env.ERROR_LOG_PATH || 'logs/error.log',
           level: 'error',
         }),
-        new winston.transports.File({ filename: 'logs/combined.log' }),
+        new winston.transports.File({
+          filename: process.env.COMBINED_LOG_PATH || 'logs/combined.log',
+        }),
       ],
     });
   }
