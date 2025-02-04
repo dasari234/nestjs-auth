@@ -22,6 +22,7 @@ import { buildResponse } from '../utils/api-response.util';
 import { CreateUserDto } from './dto/create-user-dto';
 import { UpdateUserPasswordDto } from './dto/update-user-password-dto';
 import { UpdateUserDto } from './dto/update-user-dto';
+import { UpdateTenantInfoDto } from './dto/update-tenant-info.dto';
 // import { RolesGuard } from '../auth/guards/roles.guard';
 // import { Roles } from '../auth/decorators/roles.decorator';
 
@@ -89,15 +90,31 @@ export class UsersController {
 
   @Patch('update-password')
   async updatePassword(
-    @Req() req: Request & { user: { email: string } },
+    @Req() req: Request & { user: { id: number } },
     @Body() updateUserPasswordDto: UpdateUserPasswordDto,
   ) {
-    const email = req.user.email;
+    const userId = req.user.id;
     await this.userService.updatePassword(
-      email,
+      userId,
       updateUserPasswordDto.currentPassword,
       updateUserPasswordDto.newPassword,
     );
     return { message: 'Password updated successfully' };
+  }
+
+  @Patch('update-tenant-info')
+  async updateTenantInfo(
+    @Req() req: Request & { user: { id: number } },
+    @Body() updateTenantInfoDto: UpdateTenantInfoDto,
+  ) {
+    const userId = req.user.id;
+    const updatedUser = await this.userService.updateTenantInfo(
+      userId,
+      updateTenantInfoDto,
+    );
+    return {
+      message: 'Tenant information updated successfully',
+      user: updatedUser,
+    };
   }
 }

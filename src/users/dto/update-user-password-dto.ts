@@ -1,5 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call */
 import { IsString, MinLength, Matches } from 'class-validator';
-
 export class UpdateUserPasswordDto {
   @IsString()
   currentPassword: string;

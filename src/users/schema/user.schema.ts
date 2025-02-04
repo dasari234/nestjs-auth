@@ -15,12 +15,21 @@ export class User {
   @Column()
   password: string;
 
+  @Column({ type: 'json', nullable: true })
+  tenantInfo: {
+    tenantName: string;
+    apiKey: string;
+    dbName: string;
+  };
+
   @BeforeInsert()
   async hashPassword() {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
     this.password = await bcrypt.hash(this.password, 10);
   }
 
   async comparePassword(attempt: string): Promise<boolean> {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
     return await bcrypt.compare(attempt, this.password);
   }
 }

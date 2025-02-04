@@ -9,6 +9,7 @@ import { User } from './schema/user.schema';
 import { CreateUserDto } from './dto/create-user-dto';
 import { UpdateUserDto } from './dto/update-user-dto';
 import * as bcrypt from 'bcryptjs';
+import { UpdateTenantInfoDto } from './dto/update-tenant-info.dto';
 @Injectable()
 export class UserService {
   constructor(
@@ -43,13 +44,13 @@ export class UserService {
   }
 
   async updatePassword(
-    email: string,
+    userId: number,
     currentPassword: string,
     newPassword: string,
   ): Promise<void> {
-    const user = await this.userRepository.findOne({ where: { email } });
+    const user = await this.userRepository.findOne({ where: { id: userId } });
     if (!user) {
-      throw new NotFoundException(`User with Email ${email} not found`);
+      throw new NotFoundException(`User with Email ${userId} not found`);
     }
 
     // Verify the current password
@@ -59,7 +60,37 @@ export class UserService {
     }
 
     // Hash and save the new password
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
     user.password = await bcrypt.hash(newPassword, 10);
     await this.userRepository.save(user);
+  }
+
+  async updateTenantInfo(
+    userId: number,
+    updateTenantInfoDto: UpdateTenantInfoDto,
+  ): Promise<User> {
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+
+    if (!user) {
+      throw new NotFoundException(`User with ID ${userId} not found`);
+    }
+
+    if (!user.tenantInfo) {
+      user.tenantInfo = { tenantName: '', apiKey: '', dbName: '' };
+    }
+
+    // Update tenantInfo
+    if (updateTenantInfoDto.tenantName !== undefined) {
+      user.tenantInfo.tenantName = updateTenantInfoDto.tenantName;
+    }
+    if (updateTenantInfoDto.apiKey !== undefined) {
+      user.tenantInfo.apiKey = updateTenantInfoDto.apiKey;
+    }
+    if (updateTenantInfoDto.dbName !== undefined) {
+      user.tenantInfo.dbName = updateTenantInfoDto.dbName;
+    }
+
+    await this.userRepository.save(user);
+    return user;
   }
 }
