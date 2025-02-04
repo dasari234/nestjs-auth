@@ -10,6 +10,8 @@ import {
   ConflictException,
   BadRequestException,
   UseGuards,
+  Patch,
+  Req,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { User } from './schema/user.schema';
@@ -18,6 +20,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { ApiResponse } from '../interfaces/api-response.interface';
 import { buildResponse } from '../utils/api-response.util';
 import { CreateUserDto } from './dto/create-user-dto';
+import { UpdateUserPasswordDto } from './dto/update-user-password-dto';
 import { UpdateUserDto } from './dto/update-user-dto';
 // import { RolesGuard } from '../auth/guards/roles.guard';
 // import { Roles } from '../auth/decorators/roles.decorator';
@@ -82,5 +85,19 @@ export class UsersController {
     } else {
       return buildResponse(false, 'Record not found', '');
     }
+  }
+
+  @Patch('update-password')
+  async updatePassword(
+    @Req() req: Request & { user: { email: string } },
+    @Body() updateUserPasswordDto: UpdateUserPasswordDto,
+  ) {
+    const email = req.user.email;
+    await this.userService.updatePassword(
+      email,
+      updateUserPasswordDto.currentPassword,
+      updateUserPasswordDto.newPassword,
+    );
+    return { message: 'Password updated successfully' };
   }
 }
